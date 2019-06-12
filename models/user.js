@@ -33,3 +33,26 @@ const userSchema = new mongoose.Schema({
         default: []
     }
 }, { timestamps: true })
+
+userSchema.virtual('password')
+.set(function(password){
+    this._password = password
+    this.salt = uudiv1()
+    this.hashed_password = this.encryptPassword(password)
+})
+.get(function(){
+    return this.hashed_password
+})
+
+userSchema.method = {
+    encryptPassword: function(password){
+        if(!password) return ''
+        try {
+            return crypto.createHmac('sha1', thus.salt).update(password).digest('hex')
+        } catch (err) {
+            return ''
+        }
+    }
+}
+
+module.exports = mongoose.model('User', userSchema)
